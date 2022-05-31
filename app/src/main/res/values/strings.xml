@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name">술기로운 음주생활</string>
+    <string name = "dialog_text">변경할 목표를 입력한 후 확인 버튼을 눌러주세요.</string>
+</resources>
