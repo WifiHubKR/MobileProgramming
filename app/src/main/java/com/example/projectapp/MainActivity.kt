@@ -13,31 +13,35 @@ import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.appcompat.app.AppCompatActivity
 import com.example.projectapp.databinding.ActivityMainBinding
+import java.io.FileOutputStream
+import java.time.LocalDate
 import java.util.*
 
 
 class MainActivity : AppCompatActivity() {
-    lateinit var DBHelper: DBHelper
+    lateinit var myDBHelper: DBHelper
     lateinit var binding: ActivityMainBinding
 
-    @RequiresApi(Build.VERSION_CODES.N)
+    @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        init()
         initDB()
+        init()
+
     }
 
 
     fun initDB() {
-        val dbfile = getDatabasePath("mydb.db")
-        //데이터베이스 폴더가 존재하지 않는 경우 실행하는 함수
-        if (!dbfile.parentFile.exists()) {
-            dbfile.parentFile.mkdir()
-        }
+            val dbfile = getDatabasePath("mydb.db")
+            //데이터베이스 폴더가 존재하지 않는 경우 실행하는 함수
+            if(!dbfile.parentFile.exists()){
+                dbfile.parentFile.mkdir()
+            }
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     private fun init() {
         val alarmManagerWeek = getSystemService(ALARM_SERVICE) as AlarmManager
         val receiverIntent = Intent(this@MainActivity, AlarmReceiver::class.java)
@@ -48,7 +52,7 @@ class MainActivity : AppCompatActivity() {
             PendingIntent.FLAG_CANCEL_CURRENT
         )
         alarmManagerWeek.cancel(pendingIntent)
-
+        myDBHelper = DBHelper(this)
 
 
         binding.setting.setOnClickListener {
@@ -71,6 +75,8 @@ class MainActivity : AppCompatActivity() {
                 if (dayObject.text != null && weekObject.text != null) {
                     val daily_goal = dayObject.text.toString().toInt()
                     val weekly_goal = weekObject.text.toString().toInt()
+                    val date = LocalDate.now().toString()
+                    myDBHelper.updateGoal(date, daily_goal, weekly_goal)
 
                 } else {
                     Toast.makeText(this, "목표를 모두 입력하셔야 합니다.", Toast.LENGTH_SHORT).show()
